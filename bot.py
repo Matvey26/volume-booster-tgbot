@@ -6,7 +6,7 @@
 import os
 from dotenv import load_dotenv
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 from utils import normalize_audio_volume, process_video_note
 
 load_dotenv()
@@ -17,6 +17,14 @@ TMP_DIR = 'tmp'
 # Создаем папку tmp, если её нет
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Привет!\n"
+        "Отправляй/пересылай мне гс или кружочек - я сделаю его громче =)\n\n"
+        "По всем вопросам - @kend27"
+    )
 
 
 async def handle_voice_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -89,6 +97,7 @@ def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     # Обработчики
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice_message))
     app.add_handler(MessageHandler(filters.VIDEO_NOTE, handle_video_note))
 
